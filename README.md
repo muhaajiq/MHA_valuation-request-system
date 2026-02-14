@@ -4,25 +4,25 @@
 Mini valuation request system using .NET 8 Web API and React 18 with TypeScript.
 
 #Run Backend
-cd backend
-dotnet run
+1. cd backend
+2. dotnet run
 
 #Run Frontend
-cd frontend
-npm install
-npm start
+1. cd frontend
+2. npm install
+3. npm start
 
 #Assumptions
-In-memory DB used for simplicity
-Focus on architecture over UI
+1. In-memory DB used for simplicity
+2. Focus on architecture over UI
 
 #Improvements With More Time
-Authentication
-Persistent database
-Pagination
-Logging
-Unit tests
+1. Authentication
+2. Persistent database
+3. Pagination
+4. Logging
+5. Unit tests
 
 #Challenges
-Status transition logic
-Validation layering
+1. Status transition logic
+2. Validation layering
