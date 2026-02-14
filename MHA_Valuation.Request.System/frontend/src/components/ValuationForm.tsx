@@ -54,33 +54,18 @@ export default function ValuationForm({ onSuccess }: Props) {
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <input
-                placeholder="Address"
-                value={form.propertyAddress}
-                onChange={e => setForm({ ...form, propertyAddress: e.target.value })}
-            />
+            <input placeholder="Address" value={form.propertyAddress} onChange={e => setForm({ ...form, propertyAddress: e.target.value })} />
 
-            <select
-                value={form.propertyTypeId}
-                onChange={e => setForm({ ...form, propertyTypeId: Number(e.target.value) })}
-            >
+            <select value={form.propertyTypeId} onChange={e => setForm({ ...form, propertyTypeId: Number(e.target.value) })}>
                 <option value={0}>Select type</option>
                 {types.map(t => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
             </select>
 
-            <input
-                type="number"
-                value={form.requestedValue}
-                onChange={e => setForm({ ...form, requestedValue: Number(e.target.value) })}
-            />
+            <input type="number" value={form.requestedValue} onChange={e => setForm({ ...form, requestedValue: Number(e.target.value) })} />
 
-            <textarea
-                placeholder="Remarks"
-                value={form.remarks}
-                onChange={e => setForm({ ...form, remarks: e.target.value })}
-            />
+            <textarea placeholder="Remarks" value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} />
 
             <button onClick={submit} disabled={loading}>
                 {loading ? "Submitting..." : "Submit"}
