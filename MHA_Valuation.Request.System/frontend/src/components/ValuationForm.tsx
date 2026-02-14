@@ -19,13 +19,15 @@ export default function ValuationForm({ onSuccess }: Props) {
     });
 
     useEffect(() => {
-        fetchPropertyTypes().then(setTypes).catch(() => setError("Failed to load types"));
+        fetchPropertyTypes()
+            .then(setTypes)
+            .catch(() => setError("Failed to load property types"));
     }, []);
 
     const validate = (): string | null => {
-        if (!form.propertyAddress.trim()) return "Address required";
-        if (form.propertyTypeId === 0) return "Select property type";
-        if (form.requestedValue <= 0) return "Value must be > 0";
+        if (!form.propertyAddress.trim()) return "Address is required";
+        if (form.propertyTypeId === 0) return "Please select a property type";
+        if (form.requestedValue <= 0) return "Requested value must be greater than 0";
         return null;
     };
 
@@ -40,34 +42,68 @@ export default function ValuationForm({ onSuccess }: Props) {
             setLoading(true);
             setError(null);
             await createRequest(form);
+            setForm({ propertyAddress: "", propertyTypeId: 0, requestedValue: 0, remarks: "" });
             onSuccess();
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Unknown error");
+            setError(e instanceof Error ? e.message : "Unknown error occurred");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div>
-            <h3>Create Request</h3>
+        <div style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "2rem", borderRadius: "8px", maxWidth: "500px" }}>
+            <h3>Create Valuation Request</h3>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <input placeholder="Address" value={form.propertyAddress} onChange={e => setForm({ ...form, propertyAddress: e.target.value })} />
+            <div style={{ marginBottom: "1rem" }}>
+                <label>Property Address</label>
+                <input
+                    type="text"
+                    placeholder="Enter address"
+                    value={form.propertyAddress}
+                    onChange={e => setForm({ ...form, propertyAddress: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
+                />
+            </div>
 
-            <select value={form.propertyTypeId} onChange={e => setForm({ ...form, propertyTypeId: Number(e.target.value) })}>
-                <option value={0}>Select type</option>
-                {types.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-            </select>
+            <div style={{ marginBottom: "1rem" }}>
+                <label>Property Type</label>
+                <select
+                    value={form.propertyTypeId}
+                    onChange={e => setForm({ ...form, propertyTypeId: Number(e.target.value) })}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
+                >
+                    <option value={0}>Select type</option>
+                    {types.map(t => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                </select>
+            </div>
 
-            <input type="number" value={form.requestedValue} onChange={e => setForm({ ...form, requestedValue: Number(e.target.value) })} />
+            <div style={{ marginBottom: "1rem" }}>
+                <label>Requested Value</label>
+                <input
+                    type="number"
+                    placeholder="Enter value"
+                    value={form.requestedValue}
+                    onChange={e => setForm({ ...form, requestedValue: Number(e.target.value) })}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem" }}
+                />
+            </div>
 
-            <textarea placeholder="Remarks" value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} />
+            <div style={{ marginBottom: "1rem" }}>
+                <label>Remarks (optional)</label>
+                <textarea
+                    placeholder="Any remarks"
+                    value={form.remarks}
+                    onChange={e => setForm({ ...form, remarks: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", marginTop: "0.25rem", minHeight: "80px" }}
+                />
+            </div>
 
-            <button onClick={submit} disabled={loading}>
+            <button onClick={submit} disabled={loading} style={{ padding: "0.5rem 1rem" }}>
                 {loading ? "Submitting..." : "Submit"}
             </button>
         </div>

@@ -1,6 +1,6 @@
 ﻿import type { CreateRequestDto, ValuationRequest, PropertyType } from "../types/valuation";
 
-const BASE = "https://localhost:5001/api";
+const BASE = "https://localhost:7233/api";
 
 export async function fetchRequests(): Promise<ValuationRequest[]> {
     const res = await fetch(`${BASE}/valuation-requests`);

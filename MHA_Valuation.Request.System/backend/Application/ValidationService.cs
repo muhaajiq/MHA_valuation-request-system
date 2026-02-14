@@ -18,6 +18,15 @@ namespace Application
         }
 
         // Get
+        public async Task<List<PropertyType>> GetActivePropertyTypes()
+        {
+            var activeTypes = await _db.PropertyTypes
+                .Where(pt => pt.IsActive)
+                .ToListAsync();
+
+            return _mapper.Map<List<PropertyType>>(activeTypes);
+        }
+
         public async Task<List<ValidationRequestDto>> GetAll()
         {
             var data = await _db.ValidationRequests.Include(x => x.PropertyType).ToListAsync();
