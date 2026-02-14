@@ -1,6 +1,8 @@
+using Application;
 using Domain;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +13,42 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("ValuationDb"));
+builder.Services.AddScoped<ValidationService>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
-ConfigureServices(builder.Services);
+app.UseCors("DevCorsPolicy");
+
+// Seed initial data
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (!db.PropertyTypes.Any())
+    {
+        db.PropertyTypes.AddRange(
+            new PropertyType { Name = "Residential", Code = "RES", IsActive = true },
+            new PropertyType { Name = "Commercial", Code = "COM", IsActive = true },
+            new PropertyType { Name = "Industrial", Code = "IND", IsActive = true }
+        );
+
+        db.SaveChanges();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,22 +61,3 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
-void ConfigureServices(IServiceCollection services)
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        if (!db.PropertyTypes.Any())
-        {
-            db.PropertyTypes.AddRange(
-                new PropertyType { Name = "Residential", Code = "RES", IsActive = true },
-                new PropertyType { Name = "Commercial", Code = "COM", IsActive = true },
-                new PropertyType { Name = "Industrial", Code = "IND", IsActive = true }
-            );
-
-            db.SaveChanges();
-        }
-    }
-}
