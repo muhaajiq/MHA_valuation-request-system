@@ -1,3 +1,7 @@
+using Domain;
+using Infrastructure;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+ConfigureServices(builder.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -23,3 +29,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+void ConfigureServices(IServiceCollection services)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        if (!db.PropertyTypes.Any())
+        {
+            db.PropertyTypes.AddRange(
+                new PropertyType { Name = "Residential", Code = "RES", IsActive = true },
+                new PropertyType { Name = "Commercial", Code = "COM", IsActive = true },
+                new PropertyType { Name = "Industrial", Code = "IND", IsActive = true }
+            );
+
+            db.SaveChanges();
+        }
+    }
+}
